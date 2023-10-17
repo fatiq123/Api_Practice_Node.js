@@ -49,6 +49,51 @@ app.get('/api/users/:id', (req, res) => {
 
 });
 
+// Endpoint to delete all users
+app.delete('/api/users', (req, res) => {
+    // clear the array to delete all users
+    users = [];
+
+    res.status(204).send(); // Respond with a "No Content" status   indicating a successful deletion
+
+});
+
+// Endpoint to delete a specific user by ID
+app.delete('/api/users/:id', (req, res) => {
+    const userId = parseInt(req.params.id);
+
+    // Find the index of the user with the specified ID
+    const userIndex = users.findIndex((user) => user.id === userId);
+
+    if (userIndex === -1) {
+        res.status(404).json({error: 'User not found'});
+    } else {
+        // Remove the user form the array
+        users.splice(userIndex, 1);
+        res.send(204).send();   // Respond with a "No Content" status
+    }
+
+});
+
+
+// Endpoint to update a specific resourse by ID
+app.put('/api/users/:id', (req, res) => {
+    const userId = parseInt(req.params.id);
+
+    // check if the resource with specific ID exists
+    const existingResource = users.find((user) => user.id === userId);
+
+    if (!existingResource) {
+        res.status(404).json({error: 'User not found'});
+    } else {
+        // Update the resource with the data from the request body
+        existingResource.id = req.body.id;
+        existingResource.name = req.body.name;
+        // Update other fields...
+
+        res.status(200).json(existingResource); // Respond with the updated resource
+    }
+});
 
 
 app.listen(Port, () => {
