@@ -20,34 +20,61 @@ let users = [
 //     res.send("Hello World");
 // });
 
-// // Endpoint to retrieve all users
-// app.get('/api/users', (req, res) => {
-//     res.json(users);
-// });
+// Endpoint to retrieve all users
+app.get('/api/users', (req, res) => {
+    res.json(users);
+});
 
-// // Endpoint to create a new user
-// app.post('/api/users', (req, res) => {
-//     const newUser = {
-//         id: users.length + 1,
-//         name: req.body.name,
-//     };
 
-//     users.push(newUser);
-//     res.status(201).json(newUser);
-// });
+//-----------------------------------------------------------------------
+// Endpoint to create a new user
+app.post('/api/users', (req, res) => {
+    // const newUser = {
+    //     id: users.length + 1,
+    //     name: req.body.name,
+    // };
 
-// // Endpoint to retrieve a user by ID
-// app.get('/api/users/:id', (req, res) => {
-//     const userId = parseInt(req.params.id);
-//     const user = users.find((u) => u.id == userId);
+    // users.push(newUser);
+    // res.status(201).json(newUser);
 
-//     if (!user) {
-//         res.status(404).json({ error: 'User not found' });
-//     } else {
-//         res.json(user);
-//     }
+    const { id, name } = req.body;
 
-// });
+    // Check if a user with the same ID already exists
+    const userExists = users.some(user => user.id === id);
+
+    if (userExists) {
+        res.status(400).json({ error: 'User with the same ID already exists' });
+        return;
+    }
+
+    const newUser = {
+        id,
+        name,
+    };
+
+    users.push(newUser);
+    res.status(201).json(newUser);
+});
+
+
+
+
+//------------------------------------------------------------------------
+// Endpoint to retrieve a user by ID
+app.get('/api/users/id/:id', (req, res) => {
+    const userId = parseInt(req.params.id);
+    const user = users.find((u) => u.id == userId);
+
+    if (!user) {
+        res.status(404).json({ error: 'User not found' });
+    } else {
+        res.json(user);
+    }
+
+});
+
+
+
 
 // Endpoint to retrieve a user by name
 // Option 1: Retrieve a user by name using a path parameter
@@ -65,7 +92,7 @@ app.get('/api/users/:name', (req, res) => {
 });
 
 // Option 2: Retrieve a user by name using a query parameter
-app.get('/api/users', (req, res) => {
+app.get('/api/users/search', (req, res) => {
     const userName = req.query.name;
 
     if (!userName) {
@@ -75,7 +102,6 @@ app.get('/api/users', (req, res) => {
 
     const user = users.find(user => user.name === userName);
 
-    // if user found
     if (user) {
         res.status(200).json(user);
     } else {
@@ -85,47 +111,50 @@ app.get('/api/users', (req, res) => {
 
 
 
-// // Endpoint to delete all users
-// app.delete('/api/users', (req, res) => {
-//     // clear the array to delete all users
-//     users = [];
 
-//     res.status(204).send(); // Respond with a "No Content" status   indicating a successful deletion
 
-// });
+//------------------------------------------------------------------------
+// Endpoint to delete all users
+app.delete('/api/users', (req, res) => {
+    // clear the array to delete all users
+    users = [];
 
-// // Endpoint to delete a specific user by ID
-// app.delete('/api/users/:id', (req, res) => {
-//     const userId = parseInt(req.params.id);
+    res.status(204).send(); // Respond with a "No Content" status   indicating a successful deletion
 
-//     // Find the index of the user with the specified ID
-//     const userIndex = users.findIndex((user) => user.id === userId);
+});
 
-//     if (userIndex === -1) {
-//         res.status(404).json({ error: 'User not found' });
-//     } else {
-//         // Remove the user form the array
-//         users.splice(userIndex, 1);
-//         res.send(204).send();   // Respond with a "No Content" status
-//     }
+// Endpoint to delete a specific user by ID
+app.delete('/api/users/:id', (req, res) => {
+    const userId = parseInt(req.params.id);
 
-// });
+    // Find the index of the user with the specified ID
+    const userIndex = users.findIndex((user) => user.id === userId);
 
-// // Endpoint to delete a specific user by name
-// app.delete('/api/users/:name', (req, res) => {
-//     const userName = req.params.name;
+    if (userIndex === -1) {
+        res.status(404).json({ error: 'User not found' });
+    } else {
+        // Remove the user form the array
+        users.splice(userIndex, 1);
+        res.send(204).send();   // Respond with a "No Content" status
+    }
 
-//     // Filter the users array to find users with the specified name
-//     const userToDelete = users.find((user) => user.name === userName);
+});
 
-//     if (!userToDelete) {
-//         res.status(404).json({ error: 'User with the specific name not found' });
-//     } else {
-//         // Remove the found user from the array
-//         users = users.filter((user) => user.name !== userName);
-//         res.status(204).send();
-//     }
-// });
+// Endpoint to delete a specific user by name
+app.delete('/api/users/:name', (req, res) => {
+    const userName = req.params.name;
+
+    // Filter the users array to find users with the specified name
+    const userToDelete = users.find((user) => user.name === userName);
+
+    if (!userToDelete) {
+        res.status(404).json({ error: 'User with the specific name not found' });
+    } else {
+        // Remove the found user from the array
+        users = users.filter((user) => user.name !== userName);
+        res.status(204).send();
+    }
+});
 
 
 
